@@ -63,27 +63,41 @@ def alfred_project_item(title: str, id: str, input_text: str, theme: str):
 def alfred_add_item(title: str, notes: str, container_type: ContainerType, container_title: str, container_id: str, theme: str):
   # add a function that returns a dictionary for adding an item
 
-  def variables(type: ItemType):
-    return {
+  def variables(type: ItemType, batch_mode: bool = False):
+    vars = {
       "input_text": title,
       "notes": notes,
       "action": ActionType.ADD.value,
       "item_type": type.value,
-      "container_type": ContainerType.AREA.value,
+      "container_type": container_type.value,
       "container_id": container_id,
       "container_title": container_title,
     }
+    if batch_mode:
+      vars["batch_mode"] = "true"
+    return vars
   
   def mods(type: ContainerType):
-    return {
-      "option": {
+    base_mods = {}
+    
+    if type == ContainerType.AREA or type == ContainerType.TODAY:
+      base_mods["option"] = {
         "arg": "",
         "variables": variables(ItemType.PROJECT),
         "subtitle": f"Add project '{title}' to {container_type.value} {container_title}",
         "icon": {"path": f"icons/{theme}/project_add.png"},
         "valid": True
       }
-    } if type == ContainerType.AREA or type == ContainerType.TODAY else {}
+    
+    # Add cmd modifier for batch mode
+    base_mods["cmd"] = {
+      "arg": "",
+      "variables": variables(ItemType.TASK, batch_mode=True),
+      "subtitle": f"Add task '{title}' to {container_type.value} {container_title} (⌘ to add more)",
+      "valid": True
+    }
+    
+    return base_mods
 
 
   return {

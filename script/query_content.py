@@ -26,6 +26,7 @@ def main():
     container_type = os.environ.get("container_type", "")
     container_id = os.environ.get("container_id", "")
     container_title = os.environ.get("container_title", "")
+    batch_context = os.environ.get("batch_context", "false") == "true"
 
     db_path = find_things_db()
     if not db_path:
@@ -43,24 +44,26 @@ def main():
         
         items = []
         
-        items.append(
-            alfred_back_button(
-                input_text=input_text,
-                theme=theme,
-                subtitle="Back to Menu"
+        if not batch_context:
+            items.append(
+                alfred_back_button(
+                    input_text=input_text,
+                    theme=theme,
+                    subtitle="Back to Menu"
+                )
             )
-        )
         
-        items.append(
-            alfred_add_item(
-                title=input_text,
-                notes=notes,
-                container_type=ContainerType.AREA,
-                container_title=container_title,
-                container_id=container_id,
-                theme=theme
+        if input_text or batch_context:
+            items.append(
+                alfred_add_item(
+                    title=input_text,
+                    notes=notes,
+                    container_type=ContainerType.AREA,
+                    container_title=container_title,
+                    container_id=container_id,
+                    theme=theme
+                )
             )
-        )
         
         # Projekte der Area
         cursor.execute(Queries.PROJECTS_IN_AREA, (container_id,))

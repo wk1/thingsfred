@@ -93,14 +93,38 @@ def main():
         success_title = f"Added to Project 📂"
         success_subtitle = f"{item_type} \"{input_text}\" added to {container_title}."
 
-    result = {
-        "alfredworkflow": {
-            "variables": {
-                "success_title": success_title,
-                "success_subtitle": success_subtitle
+    batch_mode = os.environ.get("batch_mode", "false") == "true"
+    
+    if batch_mode:
+        # Write container info to a file for the batch script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        batch_file = os.path.join(os.path.dirname(script_dir), ".batch_info")
+        
+        with open(batch_file, 'w') as f:
+            f.write(f"{container_type.value}\n")
+            f.write(f"{container_id}\n") 
+            f.write(f"{container_title}\n")
+            f.write(f"{item_type.value if isinstance(item_type, ItemType) else item_type}\n")
+        
+        # Trigger the batch mode through workflow variables instead
+        result = {
+            "alfredworkflow": {
+                "variables": {
+                    "success_title": success_title + " - Batch Mode", 
+                    "success_subtitle": "Continue adding items",
+                    "trigger_batch": "true"
+                }
             }
         }
-    }
+    else:
+        result = {
+            "alfredworkflow": {
+                "variables": {
+                    "success_title": success_title,
+                    "success_subtitle": success_subtitle
+                }
+            }
+        }
 
     print(json.dumps(result))
 
