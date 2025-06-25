@@ -15,9 +15,10 @@ subprocess.run([sys.executable, update_script], capture_output=True)
 
 theme = get_icon_theme()
 query = sys.argv[1] if len(sys.argv) > 1 else ""
+separator = os.environ.get("NOTES_SEPARATOR", "///")
 
-if "///" in query:
-    parts = query.split("///", 1)
+if separator in query:
+    parts = query.split(separator, 1)
     input_text = parts[0].strip()
     notes = parts[1].strip()
 else:
