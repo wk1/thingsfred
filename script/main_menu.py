@@ -7,6 +7,7 @@ import subprocess
 import os
 from helpers.theming import get_icon_theme
 from helpers.models import ItemType, ContainerType, ActionType
+from helpers.input import processInput
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 update_script = os.path.join(script_dir, "helpers/theming.py")
@@ -14,17 +15,7 @@ subprocess.run([sys.executable, update_script], capture_output=True)
 
 
 theme = get_icon_theme()
-query = sys.argv[1] if len(sys.argv) > 1 else ""
-separator = os.environ.get("NOTES_SEPARATOR", "///")
-
-if separator in query:
-    parts = query.split(separator, 1)
-    input_text = parts[0].strip()
-    notes = parts[1].strip()
-else:
-    input_text = query.strip()
-    notes = ""
-
+input_text, notes = processInput()
 
 items = []
 
@@ -32,7 +23,7 @@ if input_text:
 
     items.append({
         "title": f"Inbox",
-        "subtitle": f"Create \"{input_text}\" in Inbox",
+        "subtitle": f"Create Task \"{input_text}\" in Inbox",
         "arg": input_text,
         "variables": {
             "input_text": input_text,
@@ -40,14 +31,29 @@ if input_text:
             "action": ActionType.ADD.value,
             "item_type": ItemType.TASK.value,
             "container_type": ContainerType.INBOX.value,
+            "container_title": "📥 Inbox",
         },
         "icon": {"path": f"icons/{theme}/inbox.png"},
-        "valid": True
+        "valid": True,
+        "mods": {
+            "cmd": {
+                "variables": {
+                    "input_text": input_text,
+                    "notes": notes,
+                    "action": ActionType.ADD.value,
+                    "item_type": ItemType.TASK.value,
+                    "container_type": ContainerType.INBOX.value,
+                    "container_title": "📥 Inbox",
+                    "batch": 1
+                },
+                "subtitle": f"Batch create Task \"{input_text}\" in Inbox"
+            }
+        }
     })
 
     items.append({
         "title": f"Today",
-        "subtitle": f"Create \"{input_text}\" in Today",
+        "subtitle": f"Create Task \"{input_text}\" in Today",
         "arg": input_text,
         "variables": {
             "input_text": input_text,
@@ -55,6 +61,7 @@ if input_text:
             "action": ActionType.ADD.value,
             "item_type": ItemType.TASK.value,
             "container_type": ContainerType.TODAY.value,
+            "container_title": "📆 Today",
         },
         "icon": {"path": f"icons/{theme}/today.png"},
         "valid": True,
@@ -68,8 +75,23 @@ if input_text:
                     "action": ActionType.ADD.value,
                     "item_type": ItemType.PROJECT.value,
                     "container_type": ContainerType.TODAY.value,
+                    "container_title": "📆 Today",
                 },
-                "subtitle": f"Create PROJECT \"{input_text}\" for Today"
+                "subtitle": f"Create Project \"{input_text}\" for Today"
+            },
+            "cmd": {
+                "valid": True,
+                "arg": input_text,
+                "variables": {
+                    "input_text": input_text,
+                    "notes": notes,
+                    "action": ActionType.ADD.value,
+                    "item_type": ItemType.TASK.value,
+                    "container_type": ContainerType.TODAY.value,
+                    "container_title": "📆 Today",
+                    "batch": 1
+                },
+                "subtitle": f"Batch create Task \"{input_text}\" for Today"
             }
         }
     })
