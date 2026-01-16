@@ -23,7 +23,7 @@ def main():
   # if input_text:
   items.append({
     "title": f"Inbox",
-    "subtitle": f"Create Task \"{input_text}\" in Inbox",
+    "subtitle": f"Create Task \"{input_text}\" in Inbox" if input_text else "Type a task name to create in Inbox",
     "arg": input_text,
     "variables": {
       "input_text": input_text,
@@ -46,14 +46,14 @@ def main():
           "container_title": "📥 Inbox",
           "batch": 1
         },
-        "subtitle": f"Batch create Task \"{input_text}\" in Inbox"
+        "subtitle": f"Batch create Task \"{input_text}\" in Inbox" if input_text else "Type a task name to start batch mode"
       }
     }
   })
 
   items.append({
     "title": f"Today",
-    "subtitle": f"Create Task \"{input_text}\" in Today",
+    "subtitle": f"Create Task \"{input_text}\" in Today" if input_text else "Type a task name to create in Today",
     "arg": input_text,
     "variables": {
       "input_text": input_text,
@@ -77,7 +77,7 @@ def main():
           "container_type": ContainerType.TODAY.value,
           "container_title": "📆 Today",
         },
-        "subtitle": f"Create Project \"{input_text}\" for Today"
+        "subtitle": f"Create Project \"{input_text}\" for Today" if input_text else "Type a project name to create for Today"
       },
       "cmd": {
         "valid": bool(input_text),
@@ -91,7 +91,7 @@ def main():
           "container_title": "📆 Today",
           "batch": 1
         },
-        "subtitle": f"Batch create Task \"{input_text}\" for Today"
+        "subtitle": f"Batch create Task \"{input_text}\" for Today" if input_text else "Type a task name to start batch mode"
       }
     }
   })
